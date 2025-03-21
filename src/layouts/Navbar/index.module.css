@@ -1,0 +1,17 @@
+.navContainer {
+  background-color: var(--salt-color-teal-700);
+  padding: 3px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  color: white;
+}
+.logo {
+  width: 30px;
+}
+.pointer {
+  cursor: pointer;
+}
+.navItems {
+  color: var(--salt-white);
+}
