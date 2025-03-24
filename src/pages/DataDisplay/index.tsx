@@ -8,13 +8,24 @@ import defaultData10KData from '../../Datasets/defaultData10KData.json'
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import GridDataService from '../../services/GridDataService';
-import ApiService from '../../services/ApiService';
+import { useGet } from "../../services/ApiMiddleware/useApiMethods";
 
 export default function DataDisplay() {
   const [defaultData, setDefaultData] = useState(null)
   const { containerProps } = useAgGridHelpers();
   const gridRef = useRef<AgGridReact>(null);
-  const TestApi = ApiService.useGet('/todos' , {requestConfig :{baseUrl : "https://jsonplaceholder.typicode.com/"}})
+  const TestApi = useGet<{
+    completed: boolean,
+    id: number,
+    title: string,
+    userId: number
+  }[]>('/todos', { overriddenConfig: { baseURL: "https://jsonplaceholder.typicode.com/" } })
+  const TestApi2 = useGet<{
+    completed: boolean,
+    id: number,
+    title: string,
+    userId: number
+  }>('/todos/1', { overriddenConfig: { baseURL: "https://jsonplaceholder.typicode.com/" } })
 
   const createViewportDatasource = () => {
     let initParams: any;
@@ -41,7 +52,8 @@ export default function DataDisplay() {
   }
   useEffect(() => {
     GetData()
-    TestApi.fetchData()
+    TestApi.load()
+    TestApi2.load()
   }, [])
   return (
     <StackLayout align='center'>
@@ -49,29 +61,32 @@ export default function DataDisplay() {
         <Panel {...containerProps}
           className={clsx(containerProps.className, {
           }, styles.dataGridBorder, styles.dataGridContainer)} >
+          {
+            TestApi2.loading ? <p>Loading 2....</p> : <p>{JSON.stringify(TestApi2.data)}</p>
+          }
           <h1>Using Api Middleware</h1>
           {
             TestApi.loading ?
-            <h3>Loading Data ...</h3>
-            :
-            <table border={1} width={"100%"} cellPadding={10} cellSpacing={0}  >
-              <tbody>
-                <tr>
-                  <th>ID</th>
-                  <th>Title</th>
-                  <th>Completed</th>
-                </tr>
-                {
-                  TestApi.response?.map((item:any)=>(
-                    <tr key={item?.id}>
-                      <td>{item?.id}</td>
-                      <td>{item?.title}</td>
-                      <td>{JSON.stringify(item?.completed)}</td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
+              <h3>Loading Data ...</h3>
+              :
+              <table border={1} width={"100%"} cellPadding={10} cellSpacing={0}  >
+                <tbody>
+                  <tr>
+                    <th>ID</th>
+                    <th>Title</th>
+                    <th>Completed</th>
+                  </tr>
+                  {
+                    TestApi.data?.map((item: any) => (
+                      <tr key={item?.id}>
+                        <td>{item?.id}</td>
+                        <td>{item?.title}</td>
+                        <td>{JSON.stringify(item?.completed)}</td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
           }
         </Panel>
         <br />

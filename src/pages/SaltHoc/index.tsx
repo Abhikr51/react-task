@@ -7,14 +7,12 @@ import { defaultColumns } from "../../Datasets";
 import { FC, memo, useEffect, useMemo, useRef, useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import GridDataService from '../../services/GridDataService';
-import ApiService from '../../services/ApiService';
 import SaltAvatar from "../../hoc/SaltAvatar";
 
 export default function SaltHoc() {
     const [defaultData, setDefaultData] = useState(null)
     const { containerProps } = useAgGridHelpers();
     const gridRef = useRef<AgGridReact>(null);
-    const TestApi = ApiService.useGet('/todos', { requestConfig: { baseUrl: "https://jsonplaceholder.typicode.com/" } })
     const GetData = () => {
         GridDataService.fetchDefaultData()
             .then((res: any) => {
@@ -24,7 +22,6 @@ export default function SaltHoc() {
     }
     useEffect(() => {
         GetData()
-        TestApi.fetchData()
     }, [])
     interface PanelWrapperProps extends PanelProps {
         headerTitle: string
