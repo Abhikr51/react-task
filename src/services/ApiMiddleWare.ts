@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { AxiosRequestConfig, AxiosResponse } from "axios"
+import { AxiosRequestConfig } from "axios"
 import { useState } from "react"
 
 export type ApiConfigurationProps = {
@@ -23,7 +23,7 @@ export const CreateApiService = (apiConfigs?:ApiConfigurationProps)=>{
 }
 
 
-
+//this api should be generic
 
 const ApiServiceBuilder = (configurations:ApiConfigurationProps)=>{
     const ApiInstance = (reqConfigs?: RequestConfigs) => {
@@ -75,6 +75,7 @@ const ApiServiceBuilder = (configurations:ApiConfigurationProps)=>{
     const useOptions = (endpoint: string, combinedConfigs?: {axiosConfig? :AxiosRequestConfig , requestConfig? : RequestConfigs}) => {
         return useApiCall(ApiInstance(combinedConfigs?.requestConfig).options , endpoint, combinedConfigs?.axiosConfig)
     }
+    //what make its better that useFetcher
     return {
         usePost,
         useGet,

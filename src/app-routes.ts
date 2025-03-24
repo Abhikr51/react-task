@@ -1,7 +1,8 @@
-import { DatabaseIcon, HomeIcon, NotificationIcon, UserBadgeIcon } from "@salt-ds/icons"
+import { ApiIcon, DatabaseIcon, HomeIcon, NotificationIcon, UserBadgeIcon } from "@salt-ds/icons"
 import Home from "./pages/Home"
 import Profile from "./pages/Profile"
 import DataDisplay from "./pages/DataDisplay"
+import SaltHoc from "./pages/SaltHoc"
 
 
 const AppRoutes =[
@@ -22,6 +23,12 @@ const AppRoutes =[
         path : "/data-display",
         Component : DataDisplay,
         Icon : DatabaseIcon
+    },
+    {
+        title : "Salt DS Hoc",
+        path : "/salt-hoc",
+        Component : SaltHoc,
+        Icon : ApiIcon
     },
 ]
 

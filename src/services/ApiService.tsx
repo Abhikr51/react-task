@@ -5,7 +5,7 @@ import { BASE_URL } from "../app.config"
 const apiConfigs: ApiConfigurationProps = {
     baseUrl : BASE_URL
 }
-
+//use factory pattern
 const ApiService = ApiServiceBuilder(apiConfigs)
 
 export default ApiService

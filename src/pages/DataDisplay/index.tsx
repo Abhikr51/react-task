@@ -1,41 +1,15 @@
-import DataGridDisplay from '../../components/DataGridDisplay';
+import SaltAgGrid from "../../hoc/SaltAgGrid";
 import { FlexItem, Panel, StackLayout, } from "@salt-ds/core";
 import { clsx } from "clsx";
 import { useAgGridHelpers } from '../../helpers/useAgGridHelpers';
 import styles from './index.module.css'
 import { defaultColumns, masterDetailColumns } from "../../Datasets";
-// import defaultData from '../../Datasets/defaultData.json'
 import defaultData10KData from '../../Datasets/defaultData10KData.json'
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import GridDataService from '../../services/GridDataService';
 import ApiService from '../../services/ApiService';
-// import { useGet } from '../../services/ApiService';
-const DetailCellRenderer = () => {
-  const [nestedData, setNestedData] = useState(null)
-  const { containerProps } = useAgGridHelpers();
-  const GetData = () => {
-    GridDataService.fetchDefaultData()
-      .then((res: any) => {
-        setNestedData(res)
-      })
-      .catch(err => console.log(err))
-  }
-  useEffect(() => {
-    GetData()
-  }, [])
-  return (
-    <div
-      className={containerProps.className}
-      style={{ height: "100%", padding: 20 }}
-    >
-      <DataGridDisplay
-        columnDefs={masterDetailColumns}
-        rowData={nestedData}
-      />
-    </div>
-  )
-}
+
 export default function DataDisplay() {
   const [defaultData, setDefaultData] = useState(null)
   const { containerProps } = useAgGridHelpers();
@@ -112,7 +86,7 @@ export default function DataDisplay() {
             // "ag-theme-salt-variant-secondary" :true,
           }, styles.dataGridBorder, styles.dataGridContainer)}
         >
-          <DataGridDisplay
+          <SaltAgGrid
             rowData={defaultData}
             columnDefs={defaultColumns}
             rowSelection={"multiple"}
@@ -128,7 +102,7 @@ export default function DataDisplay() {
           className={clsx(containerProps.className, {
           }, styles.dataGridBorder, styles.dataGridContainer)}
         >
-          <DataGridDisplay
+          <SaltAgGrid
             ref={gridRef}
             columnDefs={masterDetailColumns}
             detailCellRenderer={DetailCellRenderer}
@@ -152,7 +126,7 @@ export default function DataDisplay() {
           {...containerProps}
           className={clsx(containerProps.className, styles.dataGridBorder, styles.dataGridContainer)}
         >
-          <DataGridDisplay
+          <SaltAgGrid
             rowData={defaultData10KData}
             columnDefs={defaultColumns}
             rowModelType={"viewport"}
@@ -161,5 +135,31 @@ export default function DataDisplay() {
         </Panel>
       </FlexItem>
     </StackLayout>
+  )
+}
+
+const DetailCellRenderer = () => {
+  const [nestedData, setNestedData] = useState(null)
+  const { containerProps } = useAgGridHelpers();
+  const GetData = () => {
+    GridDataService.fetchDefaultData()
+      .then((res: any) => {
+        setNestedData(res)
+      })
+      .catch(err => console.log(err))
+  }
+  useEffect(() => {
+    GetData()
+  }, [])
+  return (
+    <div
+      className={containerProps.className}
+      style={{ height: "100%", padding: 20 }}
+    >
+      <SaltAgGrid
+        columnDefs={masterDetailColumns}
+        rowData={nestedData}
+      />
+    </div>
   )
 }
