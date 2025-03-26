@@ -1,0 +1,8 @@
+
+.dataGridBorder{
+    border: var(--salt-color-gray-50) solid 1px;
+}
+.dataGridContainer {
+    width : 700px; 
+    height : 500px;
+}

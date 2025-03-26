@@ -2,37 +2,45 @@ import axios, {
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
-  CreateAxiosDefaults,
 } from "axios";
-
-// ✅ Define Default API Configs Interface
-export interface DefaultsApiConfigs extends CreateAxiosDefaults {
-  baseURL: string;
-  timeout: number;
-  headers: Record<string, string>;
-}
+import { DefaultsApiConfigs } from "./types";
 
 class ApiMiddleware {
   private static defaultConfig: DefaultsApiConfigs = {
     baseURL: "",
-    timeout: 5000,
+    timeout: 15000,
     headers: { "Content-Type": "application/json" },
+    withCredentials: true,
+    refreshInterval: undefined,
   };
 
-  private constructor() {} // Prevent direct instantiation
+  private axiosInstance: AxiosInstance;
+  mergedConfigs:DefaultsApiConfigs
+  constructor(config?: Partial<DefaultsApiConfigs>) {
+    // Merge provided config with default config
+    const mergedConfig = { 
+      ...ApiMiddleware.defaultConfig, 
+      ...(config || {}) 
+    };
+
+    // Create axios instance
+    this.axiosInstance = axios.create(mergedConfig);
+    // this.axiosInstance.interceptors.request((req)=>{
+
+    // })
+    // this.axiosInstance.interceptors.response((req)=>{
+
+    // })
+    this.mergedConfigs = mergedConfig
+  }
 
   // ✅ Set Default Configurations
-  static setDefaultConfig(config: DefaultsApiConfigs) {
+  static setDefaultConfig(config: Partial<DefaultsApiConfigs>) {
     this.defaultConfig = { ...this.defaultConfig, ...config };
   }
 
-  // ✅ Create Axios Instance With Overridden Configs (Partial<AxiosRequestConfig>)
-  private static createInstance(overriddenConfig?: Partial<DefaultsApiConfigs>): AxiosInstance {
-    return axios.create({ ...this.defaultConfig, ...overriddenConfig });
-  }
-
   // ✅ Request Method With Strong Typing
-  static async request<T = AxiosResponse>({
+  async request<T = AxiosResponse>({
     method,
     url,
     data,
@@ -41,18 +49,15 @@ class ApiMiddleware {
     method: "get" | "post" | "put" | "delete";
     url: string;
     data?: unknown;
-    configs?: { overriddenConfig?: Partial<DefaultsApiConfigs>; axiosConfigs?: AxiosRequestConfig };
+    configs?: AxiosRequestConfig;
   }): Promise<T> {
-    const axiosInstance = this.createInstance(configs?.overriddenConfig);
-
     try {
-      const response = await axiosInstance.request<T>({
+      const response = await this.axiosInstance.request<T>({
         method,
         url,
         data,
-        ...configs?.axiosConfigs, // Keeps axios' third param structure
+        ...configs,
       });
-
       return response.data;
     } catch (error) {
       throw error;

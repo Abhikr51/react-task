@@ -1,9 +1,10 @@
-import ApiMiddleware, { DefaultsApiConfigs } from "./ApiMiddleware";
+import ApiMiddleware  from "./ApiMiddleware";
 import { BASE_URL } from "../app.config";
+import { DefaultsApiConfigs } from "./ApiMiddleware/types";
 
 // Define default configurations
 
-
+//setup env files
 const apiInitializer = ()=>{
   const defaultApiConfig: DefaultsApiConfigs = {
     baseURL: BASE_URL,

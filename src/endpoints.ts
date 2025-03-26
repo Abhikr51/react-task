@@ -1,6 +1,6 @@
 const Endpoints = {
     defaultData: '/data',
-    test: '/todos'
+    todos: '/todos'
 }
 
 export default Endpoints

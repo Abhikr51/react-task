@@ -1,20 +1,8 @@
-import { useState, useCallback } from "react";
-import ApiMiddleware, { DefaultsApiConfigs } from "."; // Import the API Middleware
-import { AxiosRequestConfig } from "axios";
+import { useState, useCallback, useEffect, useMemo } from "react";
+import ApiMiddleware from "../ApiMiddleware";
+import apiErrorHandler from "./apiErrorHandler";
+import { ApiError, ApiRequestConfig, ApiState } from "./types";
 
-export interface ApiRequestConfig {
-  overriddenConfig?: Partial<DefaultsApiConfigs>;
-  axiosConfigs?: AxiosRequestConfig;
-}
-
-interface ApiState<T> {
-  data: T | null;
-  error: Error | null;
-  loading: boolean;
-  load: () => void;
-}
-
-// ✅ Generic Hook for API Requests
 const useApiRequest = <T = unknown>(
   method: "get" | "post" | "put" | "delete",
   url: string,
@@ -23,28 +11,41 @@ const useApiRequest = <T = unknown>(
 ): ApiState<T> => {
   const [responseData, setResponseData] = useState<T | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<ApiError | null>(null);
+
+  const middleware = useMemo(() => new ApiMiddleware(configs?.overriddenConfig), [
+    configs?.overriddenConfig,
+  ]);
 
   const load = useCallback(async () => {
-    setLoading(true);
+    if (!responseData) setLoading(true);
     setError(null);
 
     try {
-      const result = await ApiMiddleware.request<T>({
+      const result = await middleware.request<T>({
         method,
         url,
         data,
-        configs,
+        configs: configs?.axiosConfigs,
       });
 
-      setResponseData(result);
-      return 
+      if (JSON.stringify(result) !== JSON.stringify(responseData)) {
+        setResponseData(result);
+      }
     } catch (err) {
-      setError(err as Error);
+      setError(apiErrorHandler(err)); // ✅ Handle API errors properly
     } finally {
       setLoading(false);
     }
-  }, [method, url, data, configs]);
+  }, [method, url, data, configs, responseData, middleware]);
+
+  useEffect(() => {
+    const refreshInterval = middleware.mergedConfigs.refreshInterval;
+    if (refreshInterval && refreshInterval > 1000) {
+      const interval = setInterval(load, refreshInterval);
+      return () => clearInterval(interval);
+    }
+  }, [middleware, load]);
 
   return { data: responseData, error, loading, load };
 };

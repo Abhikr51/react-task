@@ -9,23 +9,34 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import GridDataService from '../../services/GridDataService';
 import { useGet } from "../../services/ApiMiddleware/useApiMethods";
+import Endpoints from "../../endpoints";
+import { JSON_PLACEHOLDER_URL } from "../../app.config";
 
 export default function DataDisplay() {
   const [defaultData, setDefaultData] = useState(null)
   const { containerProps } = useAgGridHelpers();
   const gridRef = useRef<AgGridReact>(null);
+
+
+
   const TestApi = useGet<{
     completed: boolean,
     id: number,
     title: string,
     userId: number
-  }[]>('/todos', { overriddenConfig: { baseURL: "https://jsonplaceholder.typicode.com/" } })
+  }[]>(Endpoints.todos, { overriddenConfig: { 
+    baseURL: JSON_PLACEHOLDER_URL 
+  } })
+
   const TestApi2 = useGet<{
     completed: boolean,
     id: number,
     title: string,
     userId: number
-  }>('/todos/1', { overriddenConfig: { baseURL: "https://jsonplaceholder.typicode.com/" } })
+  }>(`${Endpoints.todos}/1`, { overriddenConfig: { 
+    baseURL:JSON_PLACEHOLDER_URL , 
+    // refreshInterval : 2000
+  }})
 
   const createViewportDatasource = () => {
     let initParams: any;

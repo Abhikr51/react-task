@@ -1,6 +1,8 @@
-import useApiRequest, { ApiRequestConfig } from "./useApiRequest";
+import { ApiRequestConfig } from "./types";
+import useApiRequest from "./useApiRequest";
 
-
+// cons and pros b/w useFetcher and axios
+//pass default object
 // ✅ Specific API Methods
 export const useGet = <T = unknown>(url: string, configs?: ApiRequestConfig) =>
   useApiRequest<T>("get", url, undefined, configs);
