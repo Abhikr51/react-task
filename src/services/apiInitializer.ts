@@ -4,7 +4,9 @@ import { DefaultsApiConfigs } from "./ApiMiddleware/types";
 
 // Define default configurations
 
-//setup env files
+//setup env files 
+// role based configs
+// token 
 const apiInitializer = ()=>{
   const defaultApiConfig: DefaultsApiConfigs = {
     baseURL: BASE_URL,
